@@ -1,0 +1,233 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Botanical Green/Gold - Hospitality Theme */
+    --background: 40 30% 98%;
+    --foreground: 150 20% 12%;
+
+    --card: 40 30% 99%;
+    --card-foreground: 150 20% 12%;
+
+    --popover: 40 30% 99%;
+    --popover-foreground: 150 20% 12%;
+
+    /* Forest Green - Primary */
+    --primary: 150 35% 28%;
+    --primary-foreground: 40 30% 98%;
+
+    /* Soft Gold/Cream - Secondary */
+    --secondary: 45 60% 92%;
+    --secondary-foreground: 150 20% 15%;
+
+    /* Muted Sage - Muted */
+    --muted: 140 15% 90%;
+    --muted-foreground: 140 10% 35%;
+
+    /* Rich Gold - Accent */
+    --accent: 42 85% 45%;
+    --accent-foreground: 40 30% 98%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 40 30% 98%;
+
+    --border: 45 20% 85%;
+    --input: 45 20% 85%;
+    --ring: 150 35% 28%;
+
+    --radius: 0.75rem;
+
+    /* Custom tokens (mapped to botanical palette) */
+    --orchid: 150 35% 28%; /* repurposed as forest green */
+    --orchid-light: 150 30% 45%;
+    --rose-gold: 42 85% 45%; /* repurposed as rich gold */
+    --rose-gold-light: 42 80% 60%;
+    --cream: 45 40% 96%;
+    --cream-dark: 45 35% 90%;
+    --sage: 140 20% 80%;
+    --sage-dark: 140 17% 60%;
+
+    /* Gradients */
+    --gradient-hero: linear-gradient(135deg, hsl(150 35% 28%) 0%, hsl(150 30% 40%) 100%);
+    --gradient-rose: linear-gradient(135deg, hsl(42 80% 50%) 0%, hsl(150 35% 35%) 100%);
+    --gradient-cream: linear-gradient(180deg, hsl(40 30% 99%) 0%, hsl(45 35% 94%) 100%);
+
+    /* Shadows */
+    --shadow-soft: 0 4px 20px -4px hsl(150 20% 12% / 0.08);
+    --shadow-elevated: 0 12px 40px -8px hsl(150 20% 12% / 0.15);
+    --shadow-rose: 0 4px 20px -4px hsl(42 85% 45% / 0.25);
+
+    /* Transitions */
+    --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+    /* Typography */
+    --font-display: 'Cormorant Garamond', Georgia, serif;
+    --font-body: 'DM Sans', system-ui, sans-serif;
+
+    --sidebar-background: 40 30% 98%;
+    --sidebar-foreground: 150 20% 12%;
+    --sidebar-primary: 150 35% 28%;
+    --sidebar-primary-foreground: 40 30% 98%;
+    --sidebar-accent: 45 60% 92%;
+    --sidebar-accent-foreground: 150 20% 12%;
+    --sidebar-border: 45 20% 85%;
+    --sidebar-ring: 150 35% 28%;
+
+    /* Status colors */
+    --status-pending: 45 90% 50%;
+    --status-paid: 150 60% 40%;
+    --status-preparing: 200 80% 50%;
+    --status-served: 150 70% 35%;
+  }
+
+  .dark {
+    --background: 150 15% 8%;
+    --foreground: 45 20% 95%;
+
+    --card: 150 12% 12%;
+    --card-foreground: 45 20% 95%;
+
+    --popover: 150 12% 12%;
+    --popover-foreground: 45 20% 95%;
+
+    --primary: 150 45% 60%;
+    --primary-foreground: 150 15% 8%;
+
+    --secondary: 150 12% 18%;
+    --secondary-foreground: 45 20% 95%;
+
+    --muted: 150 12% 18%;
+    --muted-foreground: 140 10% 65%;
+
+    --accent: 42 80% 55%;
+    --accent-foreground: 150 15% 8%;
+
+    --destructive: 0 62% 45%;
+    --destructive-foreground: 45 20% 95%;
+
+    --border: 150 12% 20%;
+    --input: 150 12% 20%;
+    --ring: 150 45% 60%;
+
+    --sidebar-background: 150 15% 8%;
+    --sidebar-foreground: 45 20% 95%;
+    --sidebar-primary: 150 45% 60%;
+    --sidebar-primary-foreground: 150 15% 8%;
+    --sidebar-accent: 150 12% 18%;
+    --sidebar-accent-foreground: 45 20% 95%;
+    --sidebar-border: 150 12% 20%;
+    --sidebar-ring: 150 45% 60%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground font-body antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display;
+  }
+}
+
+@layer components {
+  .text-gradient-rose {
+    @apply bg-clip-text text-transparent;
+    background-image: var(--gradient-rose);
+  }
+
+  .bg-gradient-hero {
+    background-image: var(--gradient-hero);
+  }
+
+  .bg-gradient-cream {
+    background-image: var(--gradient-cream);
+  }
+
+  .shadow-soft {
+    box-shadow: var(--shadow-soft);
+  }
+
+  .shadow-elevated {
+    box-shadow: var(--shadow-elevated);
+  }
+
+  .shadow-rose {
+    box-shadow: var(--shadow-rose);
+  }
+}
+
+@layer utilities {
+  .animate-fade-in {
+    animation: fadeIn 0.6s ease-out forwards;
+  }
+
+  .animate-fade-in-up {
+    animation: fadeInUp 0.7s ease-out forwards;
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.5s ease-out forwards;
+  }
+
+  .animate-slide-in-right {
+    animation: slideInRight 0.6s ease-out forwards;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes fadeInUp {
+    from { 
+      opacity: 0; 
+      transform: translateY(30px); 
+    }
+    to { 
+      opacity: 1; 
+      transform: translateY(0); 
+    }
+  }
+
+  @keyframes scaleIn {
+    from { 
+      opacity: 0; 
+      transform: scale(0.9); 
+    }
+    to { 
+      opacity: 1; 
+      transform: scale(1); 
+    }
+  }
+
+  @keyframes slideInRight {
+    from { 
+      opacity: 0; 
+      transform: translateX(30px); 
+    }
+    to { 
+      opacity: 1; 
+      transform: translateX(0); 
+    }
+  }
+
+  .animation-delay-100 { animation-delay: 100ms; }
+  .animation-delay-200 { animation-delay: 200ms; }
+  .animation-delay-300 { animation-delay: 300ms; }
+  .animation-delay-400 { animation-delay: 400ms; }
+  .animation-delay-500 { animation-delay: 500ms; }
+}

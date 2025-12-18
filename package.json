@@ -1,0 +1,21 @@
+{
+  "name": "orchid-hospitality",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Orchid Hospitality - Full Stack Restaurant Application",
+  "scripts": {
+    "frontend": "cd frontend && npm run dev",
+    "backend": "cd backend && PORT=5050 npm start",
+    "dev": "concurrently \"npm run backend\" \"npm run frontend\"",
+    "install:all": "cd frontend && npm install && cd ../backend && npm install",
+    "build:frontend": "cd frontend && npm run build",
+    "build:backend": "cd backend && npm run build",
+    "build:all": "npm run build:backend && npm run build:frontend",
+    "seed": "cd backend && npm run build && node dist/scripts/seedSupabase.js",
+    "lint": "cd frontend && npm run lint"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
