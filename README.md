@@ -2,6 +2,12 @@
 
 A modern, full-stack web application for managing restaurant operations, room bookings, and event planning. Built with React, TypeScript, Express, and Supabase.
 
+## 🌐 Live Demo
+
+**🎉 Website is LIVE:** https://orchidhotel.netlify.app/
+
+The application is deployed and ready to use. User cart persists across sessions via Supabase.
+
 ## 🚀 Quick Start
 
 ```bash
