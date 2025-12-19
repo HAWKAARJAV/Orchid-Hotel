@@ -1,8 +1,22 @@
+/* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useContext, useReducer, ReactNode, useEffect } from 'react';
 import { CartItem, MenuItem } from '@/types';
+import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './AuthContext';
 
 type CartItemWithMeta = CartItem & { dbId?: string; itemType?: 'menu' | 'room' | 'event' };
+
+type CartRow = {
+  id: string;
+  user_id: string;
+  item_id: string;
+  item_name: string;
+  quantity: number;
+  price: number;
+  image: string | null;
+  category: string | null;
+  item_type: 'menu' | 'room' | 'event';
+};
 
 interface CartState {
   items: CartItemWithMeta[];
@@ -101,25 +115,28 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       if (!user || isLoading) return;
 
       try {
-        const response = await fetch(`http://localhost:5050/api/cart/${user.id}`);
-        if (response.ok) {
-          const cartItems = await response.json();
-          const transformedItems: CartItemWithMeta[] = (cartItems || []).map((item: any) => ({
-            id: item.item_id,
-            name: item.item_name,
-            price: parseFloat(item.price),
-            image: item.image || '',
-            category: item.category || 'menu',
-            description: '',
-            isBestSeller: false,
-            isHotToday: false,
-            discountPercentage: undefined,
-            quantity: item.quantity,
-            dbId: item.id,
-            itemType: item.item_type,
-          }));
-          dispatch({ type: 'LOAD_CART', payload: transformedItems });
-        }
+        const { data, error } = await supabase
+          .from('cart_items')
+          .select('*')
+          .eq('user_id', user.id);
+
+        if (error) throw error;
+
+        const transformedItems: CartItemWithMeta[] = (data as CartRow[] | null || []).map((item) => ({
+          id: item.item_id,
+          name: item.item_name,
+          price: Number(item.price),
+          image: item.image || '',
+          category: item.category || 'menu',
+          description: '',
+          isBestSeller: false,
+          isHotToday: false,
+          discountPercentage: undefined,
+          quantity: item.quantity,
+          dbId: item.id,
+          itemType: item.item_type,
+        }));
+        dispatch({ type: 'LOAD_CART', payload: transformedItems });
       } catch (error) {
         console.error('Error loading cart:', error);
       }
@@ -137,10 +154,39 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     if (user) {
       try {
-        const response = await fetch('http://localhost:5050/api/cart', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
+        // Try to find existing row for this item/user
+        const { data: existingRows, error: existingError } = await supabase
+          .from('cart_items')
+          .select('*')
+          .eq('user_id', user.id)
+          .eq('item_id', item.id)
+          .eq('item_type', itemType)
+          .limit(1)
+          .maybeSingle();
+
+        if (existingError && existingError.code !== 'PGRST116') throw existingError;
+
+        if (existingRows) {
+          const newQuantity = existingRows.quantity + 1;
+          const { error: updateError } = await supabase
+            .from('cart_items')
+            .update({ quantity: newQuantity })
+            .eq('id', existingRows.id)
+            .select()
+            .single();
+
+          if (updateError) throw updateError;
+
+          dispatch({
+            type: 'ADD_ITEM',
+            payload: { ...basePayload, quantity: newQuantity, dbId: existingRows.id },
+          });
+          return;
+        }
+
+        const { data, error } = await supabase
+          .from('cart_items')
+          .insert({
             user_id: user.id,
             item_type: itemType,
             item_id: item.id,
@@ -149,17 +195,17 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             price: item.price,
             image: item.image,
             category: item.category,
-          }),
-        });
+          })
+          .select()
+          .single();
 
-        if (response.ok) {
-          const saved = await response.json();
-          dispatch({
-            type: 'ADD_ITEM',
-            payload: { ...basePayload, quantity: saved.quantity, dbId: saved.id },
-          });
-          return;
-        }
+        if (error) throw error;
+
+        dispatch({
+          type: 'ADD_ITEM',
+          payload: { ...basePayload, quantity: data.quantity, dbId: data.id },
+        });
+        return;
       } catch (error) {
         console.error('Error syncing cart to database:', error);
       }
@@ -175,9 +221,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     if (user && item?.dbId) {
       try {
-        await fetch(`http://localhost:5050/api/cart/${item.dbId}`, {
-          method: 'DELETE',
-        });
+        await supabase.from('cart_items').delete().eq('id', item.dbId);
       } catch (error) {
         console.error('Error removing item from database:', error);
       }
@@ -191,15 +235,12 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     if (user && item?.dbId) {
       try {
         if (quantity <= 0) {
-          await fetch(`http://localhost:5050/api/cart/${item.dbId}`, {
-            method: 'DELETE',
-          });
+          await supabase.from('cart_items').delete().eq('id', item.dbId);
         } else {
-          await fetch(`http://localhost:5050/api/cart/${item.dbId}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ quantity }),
-          });
+          await supabase
+            .from('cart_items')
+            .update({ quantity })
+            .eq('id', item.dbId);
         }
       } catch (error) {
         console.error('Error updating cart in database:', error);
@@ -212,9 +253,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     if (user) {
       try {
-        await fetch(`http://localhost:5050/api/cart/user/${user.id}`, {
-          method: 'DELETE',
-        });
+        await supabase.from('cart_items').delete().eq('user_id', user.id);
       } catch (error) {
         console.error('Error clearing cart in database:', error);
       }

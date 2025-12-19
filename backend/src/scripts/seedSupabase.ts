@@ -55,7 +55,7 @@ const rooms = [
 
 async function seedDatabase() {
   try {
-    console.log('🌱 Starting Supabase database seeding...\n');
+    console.log('🌱 Starting Supabase database seeding...\\n');
 
     // Clear existing data
     console.log('🗑️  Clearing existing data...');
@@ -102,7 +102,7 @@ async function seedDatabase() {
     }
     console.log(`✅ Seeded ${roomsData?.length || 0} rooms`);
 
-    console.log('\n✨ Database seeding completed successfully!');
+    console.log('\\n✨ Database seeding completed successfully!');
     process.exit(0);
   } catch (error) {
     console.error('❌ Error seeding database:', error);

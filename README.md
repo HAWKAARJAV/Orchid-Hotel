@@ -177,6 +177,14 @@ NODE_ENV=development
 
 ## 🚀 Deployment
 
+### Live Frontend
+- Netlify: https://orchidhotel.netlify.app/
+- Uses Supabase directly from the browser; updates in Supabase tables (e.g., `menu_items`, `rooms`, `categories`) will be reflected on the frontend after a refresh.
+
+### Backend
+- Deploy the backend (Express + Supabase) only if you need the `/api` endpoints (see API Endpoints section) or server-side logic. The live Netlify build can run without the backend as long as Supabase credentials are configured.
+- Recommended targets: Railway/Render/Fly.io with Node 18+, environment variables set, and CORS allowed for your Netlify domain.
+
 ### Frontend (Vercel/Netlify)
 ```bash
 cd frontend
